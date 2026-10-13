@@ -1,0 +1,11 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Secrets: never commit these
+.env
+
+# Collected data stays out of git
+data/
