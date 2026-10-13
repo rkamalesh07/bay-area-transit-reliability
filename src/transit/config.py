@@ -27,7 +27,7 @@ def load_settings():
 
     return Settings(
         bart_tripupdates_url=os.getenv(
-            "BART_TRIPUPDATES_URL", "http://api.bart.gov/gtfsrt/tripupdate.aspx"
+            "BART_TRIPUPDATES_URL", "https://api.bart.gov/gtfsrt/tripupdate.aspx"
         ),
         poll_interval_seconds=int(os.getenv("POLL_INTERVAL_SECONDS", "60")),
         request_timeout_seconds=int(os.getenv("REQUEST_TIMEOUT_SECONDS", "10")),

@@ -38,7 +38,7 @@ Raw payloads are saved under `data/raw/` (ignored by git).
 
 ```
 mkdir -p tests/fixtures
-curl -o tests/fixtures/real_bart_sample.pb http://api.bart.gov/gtfsrt/tripupdate.aspx
+curl -o tests/fixtures/real_bart_sample.pb https://api.bart.gov/gtfsrt/tripupdate.aspx
 PYTHONPATH=src python scripts/inspect_feed.py tests/fixtures/real_bart_sample.pb
 ```
 
