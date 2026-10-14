@@ -131,3 +131,52 @@ def test_loop_stops_when_event_is_set(tmp_path):
 
     run_forever(settings, store, stop, fetch=fetch, sleep=lambda s: None)
     assert calls["n"] == 0
+
+
+class CountingStaticJob:
+    def __init__(self, fail=False):
+        self.calls = 0
+        self.fail = fail
+
+    def run_if_due(self):
+        self.calls += 1
+        if self.fail:
+            raise RuntimeError("bug in static job")
+        return "already_saved"
+
+
+def test_loop_runs_the_static_job_every_round(tmp_path):
+    settings = make_settings(tmp_path)
+    store = LocalRawStore(str(tmp_path))
+    job = CountingStaticJob()
+
+    run_forever(
+        settings,
+        store,
+        threading.Event(),
+        fetch=lambda *a, **k: ok_result(build_feed([])),
+        sleep=lambda seconds: None,
+        max_iterations=3,
+        static_job=job,
+    )
+
+    assert job.calls == 3
+
+
+def test_static_job_crash_does_not_stop_realtime_collection(tmp_path):
+    settings = make_settings(tmp_path)
+    store = LocalRawStore(str(tmp_path))
+    job = CountingStaticJob(fail=True)
+
+    run_forever(
+        settings,
+        store,
+        threading.Event(),
+        fetch=lambda *a, **k: ok_result(build_feed([])),
+        sleep=lambda seconds: None,
+        max_iterations=3,
+        static_job=job,
+    )
+
+    assert job.calls == 3
+    assert count_files(tmp_path) == 3

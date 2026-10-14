@@ -12,6 +12,7 @@ import time
 from transit.config import load_settings
 from transit.ingest.fetch import fetch_feed
 from transit.ingest.raw_store import LocalRawStore
+from transit.ingest.static_gtfs import StaticGtfsJob
 from transit.parse.trip_updates import ParseError, parse_trip_updates
 
 FEED_NAME = "bart_trip_updates"
@@ -72,12 +73,16 @@ def run_forever(
     fetch=fetch_feed,
     sleep=time.sleep,
     max_iterations=None,
+    static_job=None,
 ):
     """Call run_once on a steady schedule until stop_event is set.
 
     stop_event is a threading.Event. Railway sends SIGTERM when it stops a
     container, and main() turns that into stop_event.set() so we exit
     cleanly. max_iterations lets tests stop the loop after a few rounds.
+
+    static_job is optional. When given, it checks once per round whether
+    today's static schedule has been saved yet (it does nothing most rounds).
     """
     iterations = 0
     while not stop_event.is_set():
@@ -88,6 +93,14 @@ def run_forever(
         except Exception:
             # A bug in our own code must not kill the collector either.
             log.exception("unexpected error in run_once, continuing")
+
+        # The static schedule check comes after the realtime poll so it can
+        # never delay the poll that matters most.
+        if static_job is not None:
+            try:
+                static_job.run_if_due()
+            except Exception:
+                log.exception("unexpected error in static schedule job, continuing")
 
         iterations += 1
         if max_iterations is not None and iterations >= max_iterations:
@@ -106,6 +119,7 @@ def main():
     )
     settings = load_settings()
     store = LocalRawStore(settings.raw_data_dir)
+    static_job = StaticGtfsJob(settings, store)
 
     stop_event = threading.Event()
 
@@ -117,12 +131,15 @@ def main():
     signal.signal(signal.SIGINT, handle_signal)
 
     log.info(
-        "collector started, polling %s every %d seconds",
+        "collector started, polling %s every %d seconds, saving to %s",
         settings.bart_tripupdates_url,
         settings.poll_interval_seconds,
+        settings.raw_data_dir,
     )
     # Use an Event wait instead of sleep so shutdown is not delayed.
-    run_forever(settings, store, stop_event, sleep=stop_event.wait)
+    run_forever(
+        settings, store, stop_event, sleep=stop_event.wait, static_job=static_job
+    )
     log.info("collector stopped")
 
 

@@ -3,7 +3,7 @@
 A data pipeline that collects BART real-time trip updates, stores them in
 layers (raw, cleaned, metrics), and will train a model that predicts delays.
 
-Status: Phase 1 (collector and parser). Work in progress.
+Status: Phase 2 (deploying the collector). Work in progress.
 
 ## Data source
 
@@ -16,7 +16,7 @@ This project is not affiliated with BART and does not use BART logos.
 ```
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
 cp .env.example .env     # then edit USER_AGENT with your contact email
 ```
 
@@ -48,3 +48,10 @@ PYTHONPATH=src python scripts/inspect_feed.py tests/fixtures/real_bart_sample.pb
   from them is an approximation.
 - Not yet measured: collection uptime, data volume, model performance.
   See METRICS.md.
+
+## Deploy
+
+The collector runs as a Docker container on Railway with a volume for the raw
+files. Step by step instructions are in [docs/deploy.md](docs/deploy.md).
+Besides the realtime feed, the collector saves BART's static schedule zip once
+a day, because the realtime feed leaves route_id empty.

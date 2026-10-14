@@ -49,6 +49,16 @@ Rows repeat the same predictions across polls, so these shares are by row, not b
 | Rows with arrival_delay exactly 0 | 85.8% |
 | Rows with arrival_delay of 300 s or more | 0.43% |
 
+## Static schedule join (BART permalink downloaded 2026-10-13, joined to the 34 laptop-run files)
+
+| Metric | Value |
+|---|---|
+| Static feed version and validity (feed_info) | 72, 2026-01-12 to 2026-08-30 |
+| trips.txt rows | 4,417 |
+| Realtime trip_ids found in trips.txt | 198 of 235 (84.3%) |
+| Realtime rows whose trip_id matched | 29,281 of 29,745 (98.4%) |
+| Static routes with matched realtime rows | 10 of 14 |
+
 ## Pipeline
 
 | Metric | Value |
@@ -61,7 +71,7 @@ Rows repeat the same predictions across polls, so these shares are by row, not b
 
 | Metric | Value |
 |---|---|
-| Tests passing | 31 (pytest) |
+| Tests passing | 45 (pytest) |
 | Test data | synthetic payloads built in code, plus one real BART sample |
 
 ## Model

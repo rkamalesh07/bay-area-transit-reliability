@@ -41,3 +41,12 @@
 ## 511 SF Bay (not used in v1)
 
 Needs a free token. The default limit is 60 requests per hour per token.
+
+## Static schedule join check (2026-10-13)
+
+I joined the realtime trip_ids from the 34 laptop-run files to trips.txt from the BART permalink.
+
+- 198 of 235 distinct trip_ids matched (84.3%). By row, 29,281 of 29,745 matched (98.4%).
+- 10 of the 14 static routes had at least one matched realtime row.
+- The feed_info end date is 2026-08-30, which is before the day I downloaded it. I do not know yet whether the permalink is stale or the end date is just not updated. The daily snapshots from the collector will show when the version changes, and Phase 3 should check calendar.txt and calendar_dates.txt.
+- Only 15 of the 37 unmatched trip_ids were inspected (all in the 600 range). The other 22 were not looked at yet.

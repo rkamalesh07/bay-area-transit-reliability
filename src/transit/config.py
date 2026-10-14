@@ -19,6 +19,8 @@ class Settings:
     max_retries: int
     raw_data_dir: str
     user_agent: str
+    # Has a default so older code that builds Settings without it still works.
+    bart_static_gtfs_url: str = "https://www.bart.gov/dev/schedules/google_transit.zip"
 
 
 def load_settings():
@@ -36,5 +38,9 @@ def load_settings():
         user_agent=os.getenv(
             "USER_AGENT",
             "bay-area-transit-reliability/0.1 (student project)",
+        ),
+        bart_static_gtfs_url=os.getenv(
+            "BART_STATIC_GTFS_URL",
+            "https://www.bart.gov/dev/schedules/google_transit.zip",
         ),
     )
